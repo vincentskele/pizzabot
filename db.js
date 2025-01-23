@@ -253,6 +253,34 @@ async function getAdmins() {
   });
 }
 
+/**
+ * Add a specified amount to a user's wallet.
+ * @param {string} userID - The ID of the user.
+ * @param {number} amount - The amount to add.
+ * @returns {Promise<void>}
+ */
+async function addToWallet(userID, amount) {
+  if (amount <= 0) {
+    throw new Error('Amount to add must be positive.');
+  }
+
+  await initUserEconomy(userID);
+  return new Promise((resolve, reject) => {
+    db.run(
+      `UPDATE economy SET wallet = wallet + ? WHERE userID = ?`,
+      [amount, userID],
+      function (err) {
+        if (err) {
+          console.error(`Failed to add ${amount} to wallet for user ${userID}:`, err);
+          reject('Failed to add funds to the wallet.');
+        } else {
+          resolve();
+        }
+      }
+    );
+  });
+}
+
 // Rob another user's wallet
 async function robUser(robberId, targetId) {
   await Promise.all([initUserEconomy(robberId), initUserEconomy(targetId)]);
@@ -878,6 +906,7 @@ module.exports = {
   addShopItem,
   removeShopItem,
   getInventory,
+  addToWallet,
   addJob,
   getJobList,
   assignRandomJob,

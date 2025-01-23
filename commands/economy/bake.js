@@ -1,3 +1,4 @@
+
 const { SlashCommandBuilder } = require('@discordjs/builders'); // For creating slash commands
 const { currency } = require('../../currency'); // Custom currency module
 const db = require('../../db'); // Database module
@@ -27,11 +28,14 @@ module.exports = {
         return interaction.reply({ content: `🚫 Only an admin can bake ${currency.symbol}.`, ephemeral: true });
       }
 
+      // Define the amount to bake
+      const bakeAmount = 6969;
+
       // Update the user's wallet in the database with the baked amount
-      await db.updateWallet(interaction.user.id, 6969);
+      await db.addToWallet(interaction.user.id, bakeAmount);
 
       // Respond to the user indicating success
-      return interaction.reply(`${currency.symbol} You baked 6969 ${currency.name} into your wallet!`);
+      return interaction.reply(`${currency.symbol} You baked ${bakeAmount} ${currency.name} into your wallet!`);
     } catch (err) {
       // Catch and handle errors
       console.error(`Error executing /bake command: ${err}`);
