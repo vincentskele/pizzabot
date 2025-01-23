@@ -21,37 +21,44 @@ module.exports = {
         .setRequired(true)),
 
   async execute(interaction) {
-    if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-      return interaction.reply({ content: '🚫 Only admins can add items.', ephemeral: true });
-    }
-
-    const price = interaction.options.getInteger('price');
-    const name = interaction.options.getString('name');
-    const description = interaction.options.getString('description');
-
-    if (!price || price <= 0 || !name || !description) {
-      return interaction.reply({ content: '🚫 Invalid input. Ensure all fields are filled.', ephemeral: true });
-    }
-
     try {
+      // Defer the reply immediately to avoid timeout issues
+      await interaction.deferReply({ ephemeral: true });
+
+      // Check for admin permissions
+      if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+        return interaction.editReply({ content: '🚫 Only admins can add items.' });
+      }
+
+      // Retrieve inputs
+      const price = interaction.options.getInteger('price');
+      const name = interaction.options.getString('name');
+      const description = interaction.options.getString('description');
+
+      // Validate inputs
+      if (!price || price <= 0 || !name || !description) {
+        return interaction.editReply({ content: '🚫 Invalid input. Ensure all fields are filled.' });
+      }
+
+      // Add item to the database
       await db.addShopItem(price, name.trim(), description.trim());
 
+      // Create and send the success embed
       const embed = new EmbedBuilder()
         .setTitle(`✅ Added ${name.trim()} to the Shop`)
-        .addFields({
-          name: 'Price',
-          value: `${formatCurrency(price)}`
-        }, {
-          name: 'Description',
-          value: `${description.trim()}`
-        })
+        .addFields(
+          { name: 'Price', value: `${formatCurrency(price)}` },
+          { name: 'Description', value: `${description.trim()}` }
+        )
         .setColor(0x32CD32)
         .setTimestamp();
 
-      return interaction.reply({ embeds: [embed] });
+      await interaction.editReply({ embeds: [embed] });
     } catch (err) {
       console.error('Add Shop Item Error:', err);
-      return interaction.reply({ content: `🚫 Failed to add item: ${err.message || err}`, ephemeral: true });
+      await interaction.editReply({
+        content: `🚫 Failed to add item: ${err.message || 'Unknown error.'}`,
+      });
     }
   },
 };

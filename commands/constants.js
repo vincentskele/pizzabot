@@ -1,6 +1,6 @@
 // ASCII art for different pet types
 const PET_ART = {
-    dragon: `
+  dragon: `
       /\\___/\\
      (  o o  )
       (  T  ) 
@@ -8,7 +8,7 @@ const PET_ART = {
     .'/  |  \\'.
    /  |  |  |  \\
    |,-'--|--'-.|`,
-    phoenix: `
+  phoenix: `
        ,//\\
       /// \\\\
      ///   \\\\
@@ -16,22 +16,28 @@ const PET_ART = {
    ///  ___  \\\\
   ///  /  \\  \\\\
   ///  /   /\\  \\\\`,
-    griffin: `
+  griffin: `
       /\\/\\
      ((ovo))
      ():::()
       VV-VV`,
-    unicorn: `
+  unicorn: `
      /\\     
     ( \\\\    
      \\ \\\\  
      _\\_\\\\__
     (______)\\
      \\______/`
-  };
-  
-  // Export the constants
-  module.exports = {
-    PET_ART,
-  };
-  
+};
+
+// Command metadata
+const data = {
+  name: "pet-art",
+  description: "Displays ASCII art for different pet types.",
+};
+
+// Export the constants
+module.exports = {
+  PET_ART,
+  data,
+};
